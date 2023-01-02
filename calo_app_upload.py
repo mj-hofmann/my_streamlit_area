@@ -35,12 +35,12 @@ def load_and_init(uploaded_files):
             # read file from upload        
             this_data = calos._read_calo_data_xls(file.getvalue())
             
-        elif file.name.endswith(".csv"):
-            # # info
-            # st.write(file)
+        # elif file.name.endswith(".csv"):
+        #     # # info
+        #     # st.write(file)
             
-            # read file from upload        
-            this_data = calos._read_calo_data_csv(file)
+        #     # read file from upload        
+        #     this_data = calos._read_calo_data_csv(file)
             
         else:
             continue
@@ -201,4 +201,4 @@ if uploaded_files:
     # )
     
 else:
-    st.write("Select files ...")
+    st.write("Select files xls only (test) ...")
