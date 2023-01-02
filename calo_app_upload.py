@@ -57,7 +57,7 @@ def load_and_init(uploaded_files):
             this_data
             ])
             
-if uploaded_files and calos.get_data():          
+if uploaded_files and not calos.get_data().empty:          
 
     # load on update
     load_and_init(uploaded_files)
