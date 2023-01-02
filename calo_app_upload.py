@@ -57,7 +57,7 @@ def load_and_init(uploaded_files):
             this_data
             ])
             
-if (uploaded_files and isinstance(calos.get_data(), pd.DataFrame)):          
+if uploaded_files:          
 
     # load on update
     load_and_init(uploaded_files)
