@@ -7,11 +7,10 @@
 # - which commeand to run (here black)
 # # further options (here --safe)
 repos:
-#-   repo: https://github.com/psf/black
-#    rev: 21.9b0
-#    hooks:
-#    -   id: black
-#        args: [--safe]
+-   repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+    -   id: black
 
 -   repo: https://github.com/asottile/reorder_python_imports
     rev: v3.9.0
