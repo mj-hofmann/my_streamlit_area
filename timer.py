@@ -11,7 +11,6 @@ https://discuss.streamlit.io/t/issue-with-asyncio-run-in-streamlit/7745/11
 import asyncio
 import datetime
 
-import pysnooper
 import streamlit as st
 
 st.set_page_config(layout="wide")
