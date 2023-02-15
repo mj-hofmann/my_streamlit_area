@@ -208,7 +208,7 @@ async def function_asyc(test):
     today_name = datetime.date.today().strftime("%A")
     print(today_name)
 
-    interval_s = 0.1
+    interval_s = 1
 
     while duration_remaining >= 0:
         print(datetime.date.today())
@@ -247,6 +247,7 @@ async def main(test):
     print("main coroutine done")
 
 
+# define blank field
 test = st.empty()
 
 # define start date
@@ -262,7 +263,7 @@ slider_value = st.sidebar.slider(
     "Wie lange dauert der Takt in Stunden",
     min_value=1.0,
     max_value=10.0,
-    value=3.0,
+    value=1.5,
     step=0.25,
 )
 
@@ -271,8 +272,67 @@ project_datetime_start = pd.Timestamp.combine(project_start_date, project_start_
 # define duration in seconds
 project_duration_s = slider_value * 3600
 
+# select days
+selected_days = options = st.sidebar.multiselect(
+    "Welche Tage werden berücksichtigt?",
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+)
+
+# init list
+list_of_slots = []
+
+# add slots depending on day selection
+if "Monday" in selected_days:
+    list_of_slots.append(
+        WorkingDay("Monday", datetime.time(8, 0), datetime.time(10, 0))
+    )
+    list_of_slots.append(
+        WorkingDay("Monday", datetime.time(10, 30), datetime.time(17, 0))
+    )
+if "Tuesday" in selected_days:
+    list_of_slots.append(
+        WorkingDay("Tuesday", datetime.time(8, 0), datetime.time(10, 0))
+    )
+    list_of_slots.append(
+        WorkingDay("Tuesday", datetime.time(10, 30), datetime.time(17, 0))
+    )
+if "Wednesday" in selected_days:
+    list_of_slots.append(
+        WorkingDay("Wednesday", datetime.time(8, 0), datetime.time(10, 0))
+    )
+    list_of_slots.append(
+        WorkingDay("Wednesday", datetime.time(10, 30), datetime.time(17, 0))
+    )
+if "Thursday" in selected_days:
+    list_of_slots.append(
+        WorkingDay("Thursday", datetime.time(8, 0), datetime.time(10, 0))
+    )
+    list_of_slots.append(
+        WorkingDay("Thursday", datetime.time(10, 30), datetime.time(17, 0))
+    )
+if "Friday" in selected_days:
+    list_of_slots.append(
+        WorkingDay("Friday", datetime.time(8, 0), datetime.time(10, 0))
+    )
+    list_of_slots.append(
+        WorkingDay("Friday", datetime.time(10, 30), datetime.time(17, 0))
+    )
+
 # info
-st.sidebar.write(f"Beginn am {project_datetime_start:%A, %H:%M} für {slider_value}h.")
+print("============")
+print(project_datetime_start)
+print(project_duration_s)
+print("============")
+
+# init project
+project = Project(project_datetime_start, project_duration_s, list_of_slots)
+
+# info
+st.sidebar.write(
+    f"Beginn am {project.start:%d.%m um %H:%M} Uhr, läuft für {slider_value}h und endet mit Pausen um {project.end: %H:%M} Uhr."
+)
+
 
 # start the asyncio program
 asyncio.run(main(test))
