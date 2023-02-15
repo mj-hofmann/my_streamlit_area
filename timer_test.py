@@ -8,6 +8,7 @@ Created on Mon Feb 13 18:33:09 2023
 import datetime
 
 import pandas as pd
+import pysnooper
 
 
 # define working hours
@@ -135,6 +136,23 @@ class Project:
         # return
         return self.end
 
+    # @pysnooper.snoop()
+    def is_now_working_hour(self, now=None) -> bool:
+        # loop all slots
+        for i in self.working_hours:
+            # check for this day
+            if i.dayname != now.strftime("%A"):
+                # go to next
+                continue
+
+            # "else": check for this slot
+            if i.is_now_working_hour(now):
+                # return
+                return True
+
+        # default: return false
+        return False
+
 
 # Define working time slots
 w1 = WorkingDay("Monday", datetime.time(8, 0), datetime.time(8, 5))
@@ -159,3 +177,6 @@ schedule = project.get_working_slots()
 
 # get of project time
 dt_proj_end = project.end
+
+# check
+print(project.is_now_working_hour(now=datetime.datetime(2023, 2, 13, 8, 0)))
