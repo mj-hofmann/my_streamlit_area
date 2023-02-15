@@ -11,6 +11,7 @@ https://discuss.streamlit.io/t/issue-with-asyncio-run-in-streamlit/7745/11
 import asyncio
 import datetime
 
+import pandas as pd
 import streamlit as st
 
 st.set_page_config(layout="wide")
@@ -106,7 +107,30 @@ async def main(test):
 
 test = st.empty()
 
-slider_value = st.sidebar.slider("duration", min_value=1, max_value=10, value=7)
+# define start date
+project_start_date = st.sidebar.date_input(
+    "Wann beginnt der Takt?", datetime.date.today()
+)
+
+# define start time
+project_start_time = st.sidebar.time_input("Startzeit", datetime.time(8, 0))
+
+# define project duration
+slider_value = st.sidebar.slider(
+    "Wie lange dauert der Takt in Stunden",
+    min_value=1.0,
+    max_value=10.0,
+    value=3.0,
+    step=0.25,
+)
+
+# get start time and duration in approproate format
+project_datetime_start = pd.Timestamp.combine(project_start_date, project_start_time)
+# define duration in seconds
+project_duration_s = slider_value * 3600
+
+# info
+st.sidebar.write(f"Beginn am {project_datetime_start:%A, %H:%M} für {slider_value}h.")
 
 # start the asyncio program
 asyncio.run(main(test))
