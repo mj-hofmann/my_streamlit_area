@@ -51,7 +51,7 @@ vlaid = is_in_time_range(
 # %%
 
 
-async def function_asyc():
+async def function_asyc(test):
     # define starttime
     dt_start = datetime.datetime.now()
     print(dt_start)
@@ -69,18 +69,18 @@ async def function_asyc():
 
     while duration_remaining >= 0:
         print(datetime.date.today())
-        await asyncio.sleep(interval_s)  # [s]
+        ret = await asyncio.sleep(interval_s)  # [s]
 
         # dscrease remaining time
         duration_remaining -= interval_s
 
         test.markdown(
-            f"""<p class="big-font">{duration_remaining:.1f}s remaining</p>""",
+            f"""<p class="big-font">{duration_remaining:.0f}s left</p>""",
             unsafe_allow_html=True,
         )
 
         # info
-        print(f"{duration_remaining}s remaining")
+        print(f"{duration_remaining}s left")
 
     st.success("Congrats! All done", icon="🔥")
 
@@ -92,13 +92,13 @@ async def function_asyc():
 # v = asyncio.run(function_asyc())
 
 # custom coroutine
-async def main():
+async def main(test):
     # report a message
     print("main coroutine started")
     # create and schedule the task
-    task = asyncio.create_task(function_asyc())
+    task = asyncio.create_task(function_asyc(test))
     # wait for the task to complete
-    await task
+    r = await task
 
     # report a final message
     print("main coroutine done")
@@ -109,6 +109,6 @@ test = st.empty()
 slider_value = st.sidebar.slider("duration", min_value=1, max_value=10, value=7)
 
 # start the asyncio program
-asyncio.run(main())
+asyncio.run(main(test))
 
 # await(main())
