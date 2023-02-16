@@ -73,7 +73,7 @@ class Project:
 
         # init lists
         list_of_tuples = [
-            # (self.start, "START==="),
+            (self.start, "START==="),
             # (self.start + datetime.timedelta(seconds=self.duration_s), "END NAIVE==="),
         ]
 
@@ -120,6 +120,11 @@ class Project:
         helper["index"] = helper["type"]
         helper = helper.set_index("index")
 
+        # use "START===" as beginning
+        helper = helper.loc["START===":, :]
+        # rename
+        helper["type"] = helper["type"].str.replace("START===", "start")
+
         # add auxiliary columns
         shift_by = -1
         helper["type2"] = helper["type"].shift(shift_by)
@@ -153,8 +158,61 @@ class Project:
         # return
         return self.end
 
+    def get_remaining_timer_s_from_now(self, now=None):
+        # what to use as now?
+        if not now:
+            # use current time
+            now = datetime.datetime.now()
+
+        # get working slots
+        helper = self.get_working_slots()
+
+        # append "NOW" and "END" information
+        helper = pd.concat(
+            [
+                helper,
+                pd.DataFrame({"datetime": now, "type": "NOW"}, index=[2222]),
+                pd.DataFrame({"datetime": project.end, "type": "END==="}, index=[3333]),
+            ]
+        ).sort_values(by="datetime")
+
+        # set index column
+        helper["index"] = helper["type"]
+        helper = helper.set_index("index")
+
+        # use "START===" as beginning
+        helper = helper.loc["NOW":"END===", :]
+        # rename
+        helper["type"] = helper["type"].str.replace("NOW", "start")
+
+        # add auxiliary columns
+        shift_by = -1
+        helper["type2"] = helper["type"].shift(shift_by)
+        helper["datetime2"] = helper["datetime"].shift(shift_by)
+
+        # get timedelta
+        helper["timedelta_s"] = (
+            helper["datetime2"] - helper["datetime"]
+        ).dt.total_seconds()
+
+        helper["type"] = helper["type"].str.replace("END===", "end")
+        helper["type2"] = helper["type2"].str.replace("END===", "end")
+
+        # get working time slot duration
+        helper = helper[(helper["type"] == "start") & (helper["type2"] == "end")]
+
+        # # cumulative working time
+        timer_s_from_now = int(helper["timedelta_s"].cumsum())
+
+        # return
+        return timer_s_from_now
+
     # @pysnooper.snoop()
     def is_now_working_hour(self, now=None) -> bool:
+        # get "now"
+        if not now:
+            # get
+            now = datetime.datetime.now()
         # loop all slots
         for i in self.working_hours:
             # check for this day
@@ -171,59 +229,79 @@ class Project:
         return False
 
 
-# @pysnooper.snoop()
-def is_in_time_range(
-    check_datetime: datetime.datetime, start: datetime.time, end: datetime.time
-) -> bool:
-    # info
-    print("is_in_time_range")
+# https://gist.github.com/dhrrgn/7255361
+def human_delta(tdelta):
+    """
+    Takes a timedelta object and formats it for humans.
+    Usage:
+        # 149 day(s) 8 hr(s) 36 min 19 sec
+        print human_delta(datetime(2014, 3, 30) - datetime.now())
+    Example Results:
+        23 sec
+        12 min 45 sec
+        1 hr(s) 11 min 2 sec
+        3 day(s) 13 hr(s) 56 min 34 sec
+    :param tdelta: The timedelta object.
+    :return: The human formatted timedelta
+    """
+    d = dict(days=tdelta.days)
+    d["hrs"], rem = divmod(tdelta.seconds, 3600)
+    d["min"], d["sec"] = divmod(rem, 60)
 
-    check_time = datetime.time(check_datetime.hour, check_datetime.minute)
-
-    if check_time >= start and check_time <= end:
-        return True
+    if d["min"] == 0:
+        fmt = "{sec}s"
+    elif d["hrs"] == 0:
+        fmt = "{min}min {sec}s"
+    elif d["days"] == 0:
+        fmt = "{hrs}h {min}min {sec}s"
     else:
-        return False
+        fmt = "{days} day(s) {hrs} hr(s) {min} min {sec} sec"
 
+    return fmt.format(**d)
 
-# check
-vlaid = is_in_time_range(
-    datetime.datetime.now(), datetime.time(19, 0), datetime.time(20, 15)
-)
 
 # %%
 
 
-async def function_asyc(test):
-    # define starttime
-    dt_start = datetime.datetime.now()
-    print(dt_start)
-
-    #    duration = 10  # [s]
-    duration = slider_value
+async def function_asyc(test, project):
 
     # init remmaining time
-    duration_remaining = duration
+    try:
+        timer_remaining_s = project.get_remaining_timer_s_from_now()
+    except Exception as e:
+        print(e)
+        # info
+        test.markdown(
+            f"""<p>Bitte andere Einstellungen wählen.</p>""",
+            unsafe_allow_html=True,
+        )
+        # return
+        return
 
-    today_name = datetime.date.today().strftime("%A")
-    print(today_name)
-
+    # define timer interval
     interval_s = 1
 
-    while duration_remaining >= 0:
-        print(datetime.date.today())
+    while timer_remaining_s >= 0:
+
+        # pause zzzZZZ... zzzZZZ...
         ret = await asyncio.sleep(interval_s)  # [s]
 
-        # dscrease remaining time
-        duration_remaining -= interval_s
+        # get human readable timedelte
+        t_delta = human_delta(datetime.timedelta(seconds=timer_remaining_s))
 
+        # specify message
         test.markdown(
-            f"""<p class="big-font">{duration_remaining:.0f}s left</p>""",
+            f"""<p class="big-font">{t_delta} ...</p>""",
             unsafe_allow_html=True,
         )
 
-        # info
-        print(f"{duration_remaining}s left")
+        # decrement "timer_remaining_s" if(!) worling hour
+        if project.is_now_working_hour():
+            # decrease initial timer residue by defined interval
+            timer_remaining_s -= interval_s
+        else:
+            # do nothing
+            pass
 
     st.success("Congrats! All done")
 
@@ -235,11 +313,11 @@ async def function_asyc(test):
 # v = asyncio.run(function_asyc())
 
 # custom coroutine
-async def main(test):
+async def main(test, project):
     # report a message
     print("main coroutine started")
     # create and schedule the task
-    task = asyncio.create_task(function_asyc(test))
+    task = asyncio.create_task(function_asyc(test, project))
     # wait for the task to complete
     r = await task
 
@@ -330,11 +408,19 @@ project = Project(project_datetime_start, project_duration_s, list_of_slots)
 
 # info
 st.sidebar.write(
-    f"Beginn am {project.start:%d.%m um %H:%M} Uhr, läuft für {slider_value}h und endet mit Pausen um {project.end: %H:%M} Uhr."
+    f"""Beginn am {project.start:%d.%m um %H:%M} Uhr, läuft für {slider_value}h 
+    und endet mit Pausen um am {project.end:%d.%m um %H:%M} Uhr.  
+    Timer start um: {datetime.datetime.now():%d.%m %Y, %H:%M Uhr}.
+    """
 )
+
+try:
+    st.sidebar.write(f"Timer startet bei {project.get_remaining_timer_s_from_now()}s.")
+except Exception as e:
+    print(e)
 
 
 # start the asyncio program
-asyncio.run(main(test))
+asyncio.run(main(test, project))
 
 # await(main())

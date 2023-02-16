@@ -56,7 +56,7 @@ class Project:
 
         # init lists
         list_of_tuples = [
-            # (self.start, "START==="),
+            (self.start, "START==="),
             # (self.start + datetime.timedelta(seconds=self.duration_s), "END NAIVE==="),
         ]
 
@@ -103,6 +103,11 @@ class Project:
         helper["index"] = helper["type"]
         helper = helper.set_index("index")
 
+        # use "START===" as beginning
+        helper = helper.loc["START===":, :]
+        # rename
+        helper["type"] = helper["type"].str.replace("START===", "start")
+
         # add auxiliary columns
         shift_by = -1
         helper["type2"] = helper["type"].shift(shift_by)
@@ -136,6 +141,55 @@ class Project:
         # return
         return self.end
 
+    def get_remaining_timer_s_from_now(self, now=None):
+        # what to use as now?
+        if not now:
+            # use current time
+            now = datetime.datetime.now()
+
+        # get working slots
+        helper = self.get_working_slots()
+
+        # append "NOW" and "END" information
+        helper = pd.concat(
+            [
+                helper,
+                pd.DataFrame({"datetime": now, "type": "NOW"}, index=[0]),
+                pd.DataFrame({"datetime": project.end, "type": "END==="}, index=[0]),
+            ]
+        ).sort_values(by="datetime")
+
+        # set index column
+        helper["index"] = helper["type"]
+        helper = helper.set_index("index")
+
+        # use "START===" as beginning
+        helper = helper.loc["NOW":"END===", :]
+        # rename
+        helper["type"] = helper["type"].str.replace("NOW", "start")
+
+        # add auxiliary columns
+        shift_by = -1
+        helper["type2"] = helper["type"].shift(shift_by)
+        helper["datetime2"] = helper["datetime"].shift(shift_by)
+
+        # get timedelta
+        helper["timedelta_s"] = (
+            helper["datetime2"] - helper["datetime"]
+        ).dt.total_seconds()
+
+        helper["type"] = helper["type"].str.replace("END===", "end")
+        helper["type2"] = helper["type2"].str.replace("END===", "end")
+
+        # get working time slot duration
+        helper = helper[(helper["type"] == "start") & (helper["type2"] == "end")]
+
+        # # cumulative working time
+        timer_s_from_now = int(helper["timedelta_s"].cumsum())
+
+        # return
+        return timer_s_from_now
+
     # @pysnooper.snoop()
     def is_now_working_hour(self, now=None) -> bool:
         # loop all slots
@@ -155,9 +209,9 @@ class Project:
 
 
 # Define working time slots
-w1 = WorkingDay("Monday", datetime.time(8, 0), datetime.time(8, 5))
-w2 = WorkingDay("Monday", datetime.time(8, 10), datetime.time(8, 12))
-w3 = WorkingDay("Monday", datetime.time(8, 15), datetime.time(9, 5))
+w1 = WorkingDay("Monday", datetime.time(8, 0), datetime.time(8, 30))
+w2 = WorkingDay("Monday", datetime.time(9, 0), datetime.time(9, 30))
+w3 = WorkingDay("Monday", datetime.time(10, 0), datetime.time(14, 0))
 w4 = WorkingDay("Tuesday", datetime.time(8, 0), datetime.time(8, 5))
 w5 = WorkingDay("Tuesday", datetime.time(8, 10), datetime.time(8, 12))
 w6 = WorkingDay("Tuesday", datetime.time(8, 15), datetime.time(12, 5))
@@ -165,10 +219,10 @@ w6 = WorkingDay("Tuesday", datetime.time(8, 15), datetime.time(12, 5))
 print(w1.is_now_working_hour(now=datetime.datetime(2023, 2, 13, 8, 3)))
 
 # define start
-datetime_start = datetime.datetime(2023, 2, 13, 8, 0, 0)
+datetime_start = datetime.datetime(2023, 2, 13, 8, 5, 0)
 
 # define duration in seconds
-duration_s = 1.25 * 60 * 60
+duration_s = 0.5 * 60 * 60
 
 # init project
 project = Project(datetime_start, duration_s, [w1, w2, w3, w4, w5, w6])
@@ -180,3 +234,50 @@ dt_proj_end = project.end
 
 # check
 print(project.is_now_working_hour(now=datetime.datetime(2023, 2, 13, 8, 0)))
+
+
+# %% get remaining active seconds
+
+now_mock = datetime.datetime(2023, 2, 13, 9, 2)
+
+rem_s = project.get_remaining_timer_s_from_now(now=now_mock)
+
+
+# %%
+
+rem_s = 3000
+
+
+def human_delta(tdelta):
+    """
+    Takes a timedelta object and formats it for humans.
+    Usage:
+        # 149 day(s) 8 hr(s) 36 min 19 sec
+        print human_delta(datetime(2014, 3, 30) - datetime.now())
+    Example Results:
+        23 sec
+        12 min 45 sec
+        1 hr(s) 11 min 2 sec
+        3 day(s) 13 hr(s) 56 min 34 sec
+    :param tdelta: The timedelta object.
+    :return: The human formatted timedelta
+    """
+    d = dict(days=tdelta.days)
+    d["hrs"], rem = divmod(tdelta.seconds, 3600)
+    d["min"], d["sec"] = divmod(rem, 60)
+
+    if d["min"] == 0:
+        fmt = "{sec} sec"
+    elif d["hrs"] == 0:
+        fmt = "{min} min {sec} sec"
+    elif d["days"] == 0:
+        fmt = "{hrs} hr(s) {min} min {sec} sec"
+    else:
+        fmt = "{days} day(s) {hrs} hr(s) {min} min {sec} sec"
+
+    return fmt.format(**d)
+
+
+dt_delta = datetime.timedelta(seconds=rem_s)
+
+print(human_delta(dt_delta))
