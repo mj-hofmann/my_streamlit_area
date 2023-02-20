@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "my-streamlit-area"
+version = "0.1.0"
+description = "some streamlit application for getting to know the options"
+authors = ["Matthias Hofmann <matthias.j.hofmann@gmx.de>"]
+readme = "README.md"
+packages = [{include = "my_streamlit_area"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
