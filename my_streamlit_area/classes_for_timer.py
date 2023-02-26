@@ -177,7 +177,7 @@ class Project:
         helper = helper[(helper["type"] == "start") & (helper["type2"] == "end")]
 
         # # cumulative working time
-        timer_s_from_now = int(helper["timedelta_s"].cumsum())
+        timer_s_from_now = sum(helper["timedelta_s"].tolist())
 
         # return
         return timer_s_from_now
