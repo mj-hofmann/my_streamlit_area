@@ -14,7 +14,7 @@ import datetime
 import pandas as pd
 import streamlit as st
 
-from my_streamlit_area import classes_for_timer
+from my_streamlit_area import classes_for_timer as my_timer
 
 st.set_page_config(layout="wide")
 
@@ -166,50 +166,50 @@ list_of_slots = []
 # add slots depending on day selection
 if "Monday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Monday", datetime.time(6, 30), datetime.time(9, 0))
+        my_timer.WorkingDay("Monday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Monday", datetime.time(9, 15), datetime.time(12, 15))
+        my_timer.WorkingDay("Monday", datetime.time(9, 15), datetime.time(12, 15))
     )
     list_of_slots.append(
-        WorkingDay("Monday", datetime.time(13, 0), datetime.time(16, 15))
+        my_timer.WorkingDay("Monday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Tuesday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Tuesday", datetime.time(6, 30), datetime.time(9, 0))
+        my_timer.WorkingDay("Tuesday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Tuesday", datetime.time(9, 15), datetime.time(12, 15))
+        my_timer.WorkingDay("Tuesday", datetime.time(9, 15), datetime.time(12, 15))
     )
     list_of_slots.append(
-        WorkingDay("Tuesday", datetime.time(13, 0), datetime.time(16, 15))
+        my_timer.WorkingDay("Tuesday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Wednesday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Wednesday", datetime.time(6, 30), datetime.time(9, 0))
+        my_timer.WorkingDay("Wednesday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Wednesday", datetime.time(9, 15), datetime.time(12, 15))
+        my_timer.WorkingDay("Wednesday", datetime.time(9, 15), datetime.time(12, 15))
     )
     list_of_slots.append(
-        WorkingDay("Wednesday", datetime.time(13, 0), datetime.time(16, 15))
+        my_timer.WorkingDay("Wednesday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Thursday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Thursday", datetime.time(6, 30), datetime.time(9, 0))
+        my_timer.WorkingDay("Thursday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Thursday", datetime.time(9, 15), datetime.time(12, 15))
+        my_timer.WorkingDay("Thursday", datetime.time(9, 15), datetime.time(12, 15))
     )
     list_of_slots.append(
-        WorkingDay("Thursday", datetime.time(13, 0), datetime.time(16, 15))
+        my_timer.WorkingDay("Thursday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Friday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Friday", datetime.time(6, 30), datetime.time(9, 0))
+        my_timer.WorkingDay("Friday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Friday", datetime.time(9, 15), datetime.time(11, 45))
+        my_timer.WorkingDay("Friday", datetime.time(9, 15), datetime.time(11, 45))
     )
 
 # info
@@ -219,7 +219,7 @@ print(project_duration_s)
 print("============")
 
 # init project
-project = Project(project_datetime_start, project_duration_s, list_of_slots)
+project = my_timer.Project(project_datetime_start, project_duration_s, list_of_slots)
 
 # info
 st.sidebar.write(
