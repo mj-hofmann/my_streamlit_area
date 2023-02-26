@@ -363,38 +363,50 @@ list_of_slots = []
 # add slots depending on day selection
 if "Monday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Monday", datetime.time(8, 0), datetime.time(10, 0))
+        WorkingDay("Monday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Monday", datetime.time(10, 30), datetime.time(17, 0))
+        WorkingDay("Monday", datetime.time(9, 15), datetime.time(12, 15))
+    )
+    list_of_slots.append(
+        WorkingDay("Monday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Tuesday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Tuesday", datetime.time(8, 0), datetime.time(10, 0))
+        WorkingDay("Tuesday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Tuesday", datetime.time(10, 30), datetime.time(17, 0))
+        WorkingDay("Tuesday", datetime.time(9, 15), datetime.time(12, 15))
+    )
+    list_of_slots.append(
+        WorkingDay("Tuesday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Wednesday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Wednesday", datetime.time(8, 0), datetime.time(10, 0))
+        WorkingDay("Wednesday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Wednesday", datetime.time(10, 30), datetime.time(17, 0))
+        WorkingDay("Wednesday", datetime.time(9, 15), datetime.time(12, 15))
+    )
+    list_of_slots.append(
+        WorkingDay("Wednesday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Thursday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Thursday", datetime.time(8, 0), datetime.time(10, 0))
+        WorkingDay("Thursday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Thursday", datetime.time(10, 30), datetime.time(17, 0))
+        WorkingDay("Thursday", datetime.time(9, 15), datetime.time(12, 15))
+    )
+    list_of_slots.append(
+        WorkingDay("Thursday", datetime.time(13, 0), datetime.time(16, 15))
     )
 if "Friday" in selected_days:
     list_of_slots.append(
-        WorkingDay("Friday", datetime.time(8, 0), datetime.time(10, 0))
+        WorkingDay("Friday", datetime.time(6, 30), datetime.time(9, 0))
     )
     list_of_slots.append(
-        WorkingDay("Friday", datetime.time(10, 30), datetime.time(17, 0))
+        WorkingDay("Friday", datetime.time(9, 15), datetime.time(11, 45))
     )
 
 # info
