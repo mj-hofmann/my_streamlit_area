@@ -51,15 +51,13 @@ def human_delta(tdelta):
     d["hrs"], rem = divmod(tdelta.seconds, 3600)
     d["min"], d["sec"] = divmod(rem, 60)
 
-    if d["min"] == 0:
-        fmt = "{sec}s"
-    elif d["hrs"] == 0:
+    # define format
+    if d["hrs"] == 0:
         fmt = "{min}min {sec}s"
-    elif d["days"] == 0:
-        fmt = "{hrs}h {min}min {sec}s"
     else:
-        fmt = "{days} day(s) {hrs} hr(s) {min} min {sec} sec"
+        fmt = "{hrs}h {min}min {sec}s"
 
+    # return
     return fmt.format(**d)
 
 
