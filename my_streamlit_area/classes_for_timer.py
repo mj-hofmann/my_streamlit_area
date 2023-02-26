@@ -41,7 +41,7 @@ class Project:
         self.working_hours = working_hours
 
         # call calculation of project end time on init
-        # self.get_end()
+        self.get_end()
 
     def get_working_slots(self):
 
@@ -147,7 +147,7 @@ class Project:
             [
                 helper,
                 pd.DataFrame({"datetime": now, "type": "NOW"}, index=[2222]),
-                pd.DataFrame({"datetime": project.end, "type": "END==="}, index=[3333]),
+                pd.DataFrame({"datetime": self.end, "type": "END==="}, index=[3333]),
             ]
         ).sort_values(by="datetime")
 
