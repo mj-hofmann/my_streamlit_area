@@ -12,11 +12,15 @@ import asyncio
 import datetime
 
 import pandas as pd
+import pytz
 import streamlit as st
 
 from my_streamlit_area import classes_for_timer as my_timer
 
 st.set_page_config(layout="wide")
+
+# set timezone for all
+timezone = pytz.timezone("Europe/Berlin")
 
 st.markdown(
     """
@@ -223,7 +227,7 @@ project = my_timer.Project(project_datetime_start, project_duration_s, list_of_s
 st.sidebar.write(
     f"""Beginn am {project.start:%d.%m um %H:%M} Uhr, läuft für {slider_value}h 
     und endet mit Pausen um am {project.end:%d.%m um %H:%M} Uhr.  
-    Timer start um: {datetime.datetime.now():%d.%m %Y, %H:%M Uhr}.
+    Timer start um: {datetime.datetime.now(timezone):%d.%m %Y, %H:%M Uhr}.
     """
 )
 

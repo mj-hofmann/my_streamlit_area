@@ -2,6 +2,11 @@ import datetime
 
 import pandas as pd
 import pysnooper
+import pytz
+
+
+# set timezone for all
+timezone = pytz.timezone("Europe/Berlin")
 
 
 class WorkingDay:
@@ -17,7 +22,7 @@ class WorkingDay:
         # check of now is within working hours
         if not now:
             # get current time
-            now = datetime.datetime.now()
+            now = datetime.datetime.now(timezone)
 
         # get "time" corresponding to now
         now = datetime.time(now.hour, now.minute, now.second)
@@ -137,7 +142,7 @@ class Project:
         # what to use as now?
         if not now:
             # use current time
-            now = datetime.datetime.now()
+            now = datetime.datetime.now(timezone)
 
         # get working slots
         helper = self.get_working_slots()
@@ -187,7 +192,7 @@ class Project:
         # get "now"
         if not now:
             # get
-            now = datetime.datetime.now()
+            now = datetime.datetime.now(timezone)
         # loop all slots
         for i in self.working_hours:
             # check for this day
