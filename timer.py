@@ -236,6 +236,12 @@ try:
 except Exception as e:
     print(e)
 
+# time slot info
+if st.button("Arbeitszeiten anzeigen"):
+    # loop
+    for i in project.working_hours:
+        st.write(f"{i.dayname}: {i.start} \u21e8 {i.end}")
+
 
 # start the asyncio program
 asyncio.run(main(test, project))
