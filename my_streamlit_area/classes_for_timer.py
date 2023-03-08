@@ -22,7 +22,7 @@ class WorkingDay:
         # check of now is within working hours
         if not now:
             # get current time
-            now = datetime.datetime.now(timezone)
+            now = datetime.datetime.now(timezone).replace(tzinfo=None)
 
         # get "time" corresponding to now
         now = datetime.time(now.hour, now.minute, now.second)
@@ -142,7 +142,7 @@ class Project:
         # what to use as now?
         if not now:
             # use current time
-            now = datetime.datetime.now(timezone)
+            now = datetime.datetime.now(timezone).replace(tzinfo=None)
 
         # get working slots
         helper = self.get_working_slots()
@@ -192,7 +192,7 @@ class Project:
         # get "now"
         if not now:
             # get
-            now = datetime.datetime.now(timezone)
+            now = datetime.datetime.now(timezone).replace(tzinfo=None)
         # loop all slots
         for i in self.working_hours:
             # check for this day
