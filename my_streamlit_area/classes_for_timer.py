@@ -179,10 +179,10 @@ class Project:
         helper["type2"] = helper["type2"].str.replace("END===", "end")
 
         # get working time slot duration
-        helper = helper[(helper["type"] == "start") & (helper["type2"] == "end")]
+        helper = helper[(helper["type"] == "start")]
 
         # # cumulative working time
-        timer_s_from_now = sum(helper["timedelta_s"].tolist())
+        timer_s_from_now = int(sum(helper["timedelta_s"].tolist()))
 
         # return
         return timer_s_from_now
