@@ -28,7 +28,7 @@ st.markdown(
     .big-font {
         font-size: 130px !important;
         font-weight: 700 !important;
-        color: #ffffff !important;
+        color: #cfe396 !important;
     }
     </style>
     """,
@@ -37,7 +37,7 @@ st.markdown(
 
 
 # https://gist.github.com/dhrrgn/7255361
-def human_delta(tdelta):
+def human_delta(tdelta, show_seconds=True):
     """
     Takes a timedelta object and formats it for humans.
     Usage:
@@ -56,10 +56,16 @@ def human_delta(tdelta):
     d["min"], d["sec"] = divmod(rem, 60)
 
     # define format
-    if d["hrs"] == 0:
-        fmt = "{min}min {sec}s"
+    if show_seconds:
+        if d["hrs"] == 0:
+            fmt = "{min}min {sec}s"
+        else:
+            fmt = "{hrs}h {min}min {sec}s"
     else:
-        fmt = "{hrs}h {min}min {sec}s"
+        if d["hrs"] == 0:
+            fmt = "{min}min"
+        else:
+            fmt = "{hrs}h {min}min"
 
     # return
     return fmt.format(**d)
@@ -92,7 +98,9 @@ async def function_asyc(test, project):
         ret = await asyncio.sleep(interval_s)  # [s]
 
         # get human readable timedelte
-        t_delta = human_delta(datetime.timedelta(seconds=timer_remaining_s))
+        t_delta = human_delta(
+            datetime.timedelta(seconds=timer_remaining_s), show_seconds=checkbox_seconds
+        )
 
         # specify message
         test.markdown(
@@ -235,6 +243,9 @@ try:
     st.sidebar.write(f"Timer startet bei {project.get_remaining_timer_s_from_now()}s.")
 except Exception as e:
     print(e)
+
+# timer precision
+checkbox_seconds = st.sidebar.checkbox("Include seconds", value=True)
 
 # time slot info
 if st.button("Arbeitszeiten anzeigen"):
